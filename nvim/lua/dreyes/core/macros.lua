@@ -1,4 +1,4 @@
--- All previous macros have been changed to autocmd, @g macro will run current file
+-- @g macro will run current file
 vim.cmd([[
 	augroup run_file
 		autocmd BufEnter *.java let @g=":w\<CR>:vsp | terminal java %\<CR>i"
