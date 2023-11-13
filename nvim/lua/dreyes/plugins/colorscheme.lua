@@ -38,9 +38,8 @@ return {
 		priority = 1000,
 		config = function()
 			require("onedarkpro").setup({
-				cursorline = true,
-				transparent_background = false,
-				nvim_tree_darker = true,
+
+				options = { transparency = true, cursorline = false },
 			})
 
 			vim.cmd("colorscheme onedark_dark")
