@@ -1,5 +1,6 @@
 return {
 	"jose-elias-alvarez/null-ls.nvim", -- configure formatters & linters
+	"eslint_d", -- js linter
 	event = { "BufReadPre", "BufNewFile" },
 	config = function()
 		-- import null-ls plugin
