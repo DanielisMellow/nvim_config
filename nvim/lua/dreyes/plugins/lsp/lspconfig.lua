@@ -79,10 +79,23 @@ return {
 		lspconfig["clangd"].setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
+			filetypes = { "c", "cpp" },
 			cmd = {
 				"clangd",
+				"--background-index",
 				"--offset-encoding=utf-16",
+				"--enable-config",
 			},
+		})
+		lspconfig["arduino_language_server"].setup({
+			capabilities = capabilities,
+			on_attach = on_attach,
+			-- on_new_config = require("arduino").on_new_config,
+		})
+
+		lspconfig["cmake"].setup({
+			capabilities = capabilities,
+			on_attach = on_attach,
 		})
 		-- configure rust server
 		lspconfig["rust_analyzer"].setup({
