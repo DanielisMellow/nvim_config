@@ -37,6 +37,8 @@ return {
 				"jedi_language_server", -- Python LSP
 				"arduino_language_server",
 				"cmake",
+				-- "clang-format",
+				-- "codelldb",
 			},
 			-- auto-install configured servers (with lspconfig)
 			automatic_installation = true, -- not the same as ensure_installed

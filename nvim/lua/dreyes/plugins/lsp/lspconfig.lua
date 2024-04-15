@@ -85,6 +85,7 @@ return {
 				"--background-index",
 				"--offset-encoding=utf-16",
 				"--enable-config",
+				"--query-driver=/home/lizardking/.platformio/packages/toolchain-xtensa-esp32s3/bin/xtensa-esp32s3-elf-gcc*",
 			},
 		})
 		lspconfig["arduino_language_server"].setup({
