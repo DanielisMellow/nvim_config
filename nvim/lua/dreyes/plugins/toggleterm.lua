@@ -3,7 +3,7 @@ return {
 
 	config = function()
 		require("toggleterm").setup({
-			size = 80,
+			size = vim.o.columns * 0.4,
 			insert_mappings = false,
 			open_mapping = [[\\]],
 			autochdir = true,

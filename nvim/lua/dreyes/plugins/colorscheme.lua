@@ -31,18 +31,68 @@
 }
  ]]
 
+-- return {
+-- 	{
+-- 		"olimorris/onedarkpro.nvim",
+-- 		lazy = false,
+-- 		priority = 1000,
+-- 		config = function()
+-- 			require("onedarkpro").setup({
+--
+-- 				options = { transparency = true, cursorline = false },
+-- 			})
+--
+-- 			vim.cmd("colorscheme onedark_dark")
+-- 		end,
+-- 	},
+-- }
+
 return {
 	{
-		"olimorris/onedarkpro.nvim",
+		"zootedb0t/citruszest.nvim",
 		lazy = false,
 		priority = 1000,
+
 		config = function()
-			require("onedarkpro").setup({
+			require("citruszest").setup({
 
-				options = { transparency = true, cursorline = false },
+				option = {
+
+					transparent = true,
+				},
+				style = {
+					Constant = { bg = "#000000", bold = true },
+				},
 			})
-
-			vim.cmd("colorscheme onedark_dark")
+			vim.cmd.colorscheme("citruszest")
 		end,
 	},
 }
+
+-- return {
+-- 	{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+-- 	{
+-- 		"baliestri/aura-theme",
+-- 		lazy = false,
+-- 		priority = 1000,
+-- 		config = function(plugin)
+-- 			vim.opt.rtp:append(plugin.dir .. "/packages/neovim")
+-- 			vim.cmd([[colorscheme aura-dark]])
+-- 		end,
+-- 	},
+-- }
+
+--[[ return {
+	{
+		"dasupradyumna/midnight.nvim",
+		lazy = false,
+		priority = 1000,
+
+		config = function()
+			require("midnight").setup({
+				bg = "#000000",
+			})
+			vim.cmd.colorscheme("midnight")
+		end,
+	},
+} ]]
