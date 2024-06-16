@@ -88,18 +88,12 @@ return {
 				"--query-driver=/home/lizardking/.platformio/packages/toolchain-xtensa-esp32s3/bin/xtensa-esp32s3-elf-gcc*",
 			},
 		})
-		lspconfig["arduino_language_server"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-			-- on_new_config = require("arduino").on_new_config,
-		})
 
 		lspconfig["cmake"].setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 		})
-		-- configure rust server
-		lspconfig["rust_analyzer"].setup({
+		lspconfig["bashls"].setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 		})

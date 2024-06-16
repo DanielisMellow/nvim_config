@@ -11,7 +11,6 @@ return {
 	},
 	config = function()
 		local dap = require("dap")
-
 		local dapui = require("dapui")
 		dap.listeners.before.attach.dapui_config = function()
 			dapui.open()
@@ -51,13 +50,7 @@ return {
 			desc = "Terminate",
 		},
 
-		{
-			"<leader>dq",
-			function()
-				require("dapui").close()
-			end,
-			desc = "Terminate",
-		},
+		{"<leader>dq",function() require("dapui").close() end, desc = "Terminate",},
         { "<leader>B", function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint" },
         { "<leader>dc", function() require("dap").continue() end, desc = "Continue" },
         { "<leader>di", function() require("dap").step_into() end, desc = "Step Into" },

@@ -10,6 +10,7 @@ return {
 				c = { "clang_format" },
 				cpp = { "clang_format" },
 				lua = { "stylua" },
+				bash = { "shfmt", "shellcheck" },
 				python = { "isort", "black" },
 			},
 			format_on_save = {
