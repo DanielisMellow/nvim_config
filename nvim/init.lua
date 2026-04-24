@@ -1,3 +1,2 @@
-require("dreyes.core")
-require("dreyes.lazy")
-
+-- bootstrap lazy.nvim, LazyVim and your plugins
+require("config.lazy")
