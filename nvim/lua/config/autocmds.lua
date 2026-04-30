@@ -36,4 +36,5 @@ end
 
 -- Preferences
 set_autoformat({ "python" }, false)
+set_autoformat({ "toml" }, false)
 set_autoformat({ "lua" }, true)

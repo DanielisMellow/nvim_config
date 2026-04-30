@@ -14,6 +14,7 @@ return {
             ensure_installed = {
                 "ruff",
                 "pylint",
+                "taplo",
             },
         },
     },
