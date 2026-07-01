@@ -5,6 +5,8 @@ return {
             ensure_installed = {
                 "pyright",
                 "jedi_language_server",
+                "autotools_ls",
+                "just",
             },
         },
     },

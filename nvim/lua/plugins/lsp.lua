@@ -3,7 +3,13 @@ return {
         "neovim/nvim-lspconfig",
         opts = {
             servers = {
-                jedi_language_server = {},
+                jedi_language_server = {
+                    init_options = {
+                        workspace = {
+                            extraPaths = { "typings" },
+                        },
+                    },
+                },
                 pyright = {
                     autostart = false, -- This tells lspconfig not to start it automatically
                     -- Define the on_attach directly here
@@ -12,21 +18,21 @@ return {
                         client.server_capabilities.hoverProvider = false
                     end,
                 },
+                autotools_ls = {},
+                just = {},
             },
         },
         keys = {
             {
                 "<leader>I",
                 function()
-                    -- 'get_active_clients' is deprecated, use 'get_clients'
                     local clients = vim.lsp.get_clients({ name = "pyright", bufnr = 0 })
 
                     if #clients == 0 then
-                        -- This works because we allowed the default setup to run (didn't return false)
-                        vim.cmd("LspStart pyright")
+                        vim.lsp.enable("pyright")
                         vim.notify("Pyright started", vim.log.levels.INFO)
                     else
-                        vim.cmd("LspStop pyright")
+                        vim.lsp.enable("pyright", false)
                         vim.notify("Pyright stopped", vim.log.levels.INFO)
                     end
                 end,
