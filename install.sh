@@ -125,7 +125,54 @@ if ! command -v lazygit &>/dev/null && [ "$OS" = "Linux" ]; then
   success "lazygit installed"
 fi
 
-# ── 6. Neovim config → ~/.config/nvim ─────────────────────────────────────────
+# ── 6. uv (Astral — fast Python package & venv manager) ───────────────────────
+# Policy: install from the system package manager where possible. Astral does
+# NOT ship an apt/dnf repo, so when the packaged uv is missing or older than the
+# floor below, fall back to Astral's official installer (the "source" for the
+# latest build; it also supports `uv self update` afterwards).
+# Bump this if a plugin/tool starts needing a newer uv than your distro ships.
+MIN_UV_VERSION="0.9.0"
+
+# version_ge A B → succeeds when A >= B (semver-ish, via `sort -V`)
+version_ge() { [ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | head -1)" = "$2" ]; }
+
+install_uv_upstream() {
+  info "Installing uv via Astral installer (latest upstream)..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  # uv installs to ~/.local/bin; expose it for the rest of this script
+  export PATH="$HOME/.local/bin:$PATH"
+}
+
+if command -v uv &>/dev/null; then
+  success "uv already installed ($(uv --version))"
+elif [ "$OS" = "Darwin" ]; then
+  info "Installing uv via Homebrew..."
+  brew install uv
+elif command -v dnf &>/dev/null; then
+  # Fedora/RHEL: check what the repos would give us before committing to dnf
+  uv_candidate="$(dnf --quiet repoquery --queryformat='%{version}\n' uv 2>/dev/null | sort -V | tail -1)"
+  if [ -n "$uv_candidate" ] && version_ge "$uv_candidate" "$MIN_UV_VERSION"; then
+    info "Installing uv $uv_candidate via dnf..."
+    sudo dnf install -y uv
+  else
+    warn "dnf uv is ${uv_candidate:-unavailable} (< $MIN_UV_VERSION) — using Astral installer instead"
+    install_uv_upstream
+  fi
+elif command -v pacman &>/dev/null; then
+  info "Installing uv via pacman..."
+  sudo pacman -S --noconfirm uv
+else
+  # Debian/Ubuntu and everything else: no reliably-fresh package → go upstream
+  install_uv_upstream
+fi
+
+if command -v uv &>/dev/null; then
+  success "uv ready ($(uv --version))"
+else
+  warn "uv installed to ~/.local/bin — open a new shell (or add it to PATH) to use it"
+fi
+
+# ── 7. Neovim config → ~/.config/nvim ─────────────────────────────────────────
 NVIM_TARGET="$HOME/.config/nvim"
 backup_if_exists "$NVIM_TARGET"
 if [ -L "$NVIM_TARGET" ]; then
@@ -136,14 +183,14 @@ mkdir -p "$HOME/.config"
 ln -s "$REPO_DIR/nvim" "$NVIM_TARGET"
 success "Linked $REPO_DIR/nvim → $NVIM_TARGET"
 
-# ── 7. Tmux config → ~/.tmux.conf ─────────────────────────────────────────────
+# ── 8. Tmux config → ~/.tmux.conf ─────────────────────────────────────────────
 TMUX_TARGET="$HOME/.tmux.conf"
 backup_if_exists "$TMUX_TARGET"
 [ -L "$TMUX_TARGET" ] && rm "$TMUX_TARGET"
 ln -s "$REPO_DIR/.tmux.conf" "$TMUX_TARGET"
 success "Linked $REPO_DIR/.tmux.conf → $TMUX_TARGET"
 
-# ── 8. TPM (Tmux Plugin Manager) ──────────────────────────────────────────────
+# ── 9. TPM (Tmux Plugin Manager) ──────────────────────────────────────────────
 TPM_DIR="$HOME/.tmux/plugins/tpm"
 if [ -d "$TPM_DIR" ]; then
   success "TPM already installed"
@@ -153,7 +200,7 @@ else
   success "TPM installed"
 fi
 
-# ── 9. Install tmux plugins headlessly ────────────────────────────────────────
+# ── 10. Install tmux plugins headlessly ───────────────────────────────────────
 if command -v tmux &>/dev/null && [ -f "$TPM_DIR/bin/install_plugins" ]; then
   info "Installing tmux plugins via TPM..."
   "$TPM_DIR/bin/install_plugins" || warn "TPM plugin install had errors (may be fine if tmux isn't running)"

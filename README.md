@@ -25,9 +25,12 @@ The script will:
 
 1. **macOS** — install Homebrew if missing; **Linux** — use `apt` / `dnf` / `pacman`
 2. Install **Neovim**, **tmux**, and common CLI tools (`ripgrep`, `fd`, `fzf`, `node`, `lazygit`, `python3`)
-3. Symlink `nvim/` → `~/.config/nvim`
-4. Symlink `.tmux.conf` → `~/.tmux.conf`
-5. Clone **TPM** (Tmux Plugin Manager) and install tmux plugins
+3. Install **[uv](https://docs.astral.sh/uv/)** — fast Python package & venv manager. Prefers the system package manager (`brew` on macOS, `dnf`/`pacman` on Linux); if the packaged version is missing or older than `MIN_UV_VERSION` in `install.sh`, it falls back to Astral's official installer (Astral publishes no apt/dnf repo).
+4. Symlink `nvim/` → `~/.config/nvim`
+5. Symlink `.tmux.conf` → `~/.tmux.conf`
+6. Clone **TPM** (Tmux Plugin Manager) and install tmux plugins
+
+> **Note:** when uv comes from Astral's installer it lands in `~/.local/bin`. If `uv` isn't found right after install, open a new shell (the installer adds it to your PATH) or run `source $HOME/.local/bin/env`. Update it anytime with `uv self update`.
 
 > **Note for Ubuntu servers:** the script adds the `neovim-ppa/unstable` PPA to get a recent version of Neovim instead of the outdated apt default.
 
