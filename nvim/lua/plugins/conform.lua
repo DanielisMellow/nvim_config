@@ -4,6 +4,7 @@ return {
         formatters_by_ft = {
             python = { "isort", "ruff_format" },
             toml = { "taplo" },
+            rust = { "rustfmt" },
         },
     },
 }

@@ -172,7 +172,43 @@ else
   warn "uv installed to ~/.local/bin — open a new shell (or add it to PATH) to use it"
 fi
 
-# ── 7. Neovim config → ~/.config/nvim ─────────────────────────────────────────
+# ── 7. Rust toolchain (rustup) ────────────────────────────────────────────────
+# Policy exception, same shape as the uv one above: this goes upstream on every
+# platform rather than through the package manager.
+#   * rust-analyzer / clippy / rustfmt must match the compiler version they are
+#     analysing, and only rustup keeps them in lockstep. Distro `rust` packages
+#     ship no component management and are usually stale.
+#   * Homebrew *does* package rustup, but keg-only — it links `rustup` and
+#     leaves cargo/rustc/rust-analyzer unlinked in $(brew --prefix rustup)/bin,
+#     so it needs manual PATH surgery outside this repo to be usable at all.
+# The upstream installer puts everything in ~/.cargo/bin and wires up PATH
+# itself, which is also the layout every Rust doc and tutorial assumes.
+
+if command -v rustup &>/dev/null; then
+  success "rustup already installed ($(rustup --version 2>/dev/null | head -1))"
+else
+  info "Installing Rust via rustup.rs (upstream)..."
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+fi
+
+# Make cargo's bin dir visible for the rest of this script, whether rustup was
+# just installed or was already present.
+[ -d "$HOME/.cargo/bin" ] && export PATH="$HOME/.cargo/bin:$PATH"
+
+if command -v rustup &>/dev/null; then
+  # rustaceanvim expects rust-analyzer on PATH (it deliberately does not use the
+  # mason copy), and the nvim config lints with clippy on save.
+  info "Ensuring Rust components: rust-analyzer, clippy, rustfmt, rust-src..."
+  for component in rust-analyzer clippy rustfmt rust-src; do
+    rustup component add "$component" >/dev/null 2>&1 \
+      || warn "Could not add Rust component '$component'"
+  done
+  success "Rust ready ($(rustc --version 2>/dev/null || echo 'restart your shell to use rustc'))"
+else
+  warn "rustup not on PATH — open a new shell, or add ~/.cargo/bin to PATH"
+fi
+
+# ── 8. Neovim config → ~/.config/nvim ─────────────────────────────────────────
 NVIM_TARGET="$HOME/.config/nvim"
 backup_if_exists "$NVIM_TARGET"
 if [ -L "$NVIM_TARGET" ]; then
@@ -183,14 +219,14 @@ mkdir -p "$HOME/.config"
 ln -s "$REPO_DIR/nvim" "$NVIM_TARGET"
 success "Linked $REPO_DIR/nvim → $NVIM_TARGET"
 
-# ── 8. Tmux config → ~/.tmux.conf ─────────────────────────────────────────────
+# ── 9. Tmux config → ~/.tmux.conf ─────────────────────────────────────────────
 TMUX_TARGET="$HOME/.tmux.conf"
 backup_if_exists "$TMUX_TARGET"
 [ -L "$TMUX_TARGET" ] && rm "$TMUX_TARGET"
 ln -s "$REPO_DIR/.tmux.conf" "$TMUX_TARGET"
 success "Linked $REPO_DIR/.tmux.conf → $TMUX_TARGET"
 
-# ── 9. TPM (Tmux Plugin Manager) ──────────────────────────────────────────────
+# ── 10. TPM (Tmux Plugin Manager) ──────────────────────────────────────────────
 TPM_DIR="$HOME/.tmux/plugins/tpm"
 if [ -d "$TPM_DIR" ]; then
   success "TPM already installed"
@@ -200,7 +236,7 @@ else
   success "TPM installed"
 fi
 
-# ── 10. Install tmux plugins headlessly ───────────────────────────────────────
+# ── 11. Install tmux plugins headlessly ───────────────────────────────────────
 if command -v tmux &>/dev/null && [ -f "$TPM_DIR/bin/install_plugins" ]; then
   info "Installing tmux plugins via TPM..."
   "$TPM_DIR/bin/install_plugins" || warn "TPM plugin install had errors (may be fine if tmux isn't running)"
@@ -211,7 +247,7 @@ echo "────────────────────────�
 echo "  Setup complete! (OS: $OS)"
 echo ""
 echo "  Next steps:"
-echo "  1. Open a new terminal session"
+echo "  1. Open a new terminal session (picks up ~/.cargo/bin for Rust)"
 echo "  2. Start nvim — LazyVim will auto-install plugins on first launch"
 echo "  3. Start tmux, then press prefix + I (Ctrl+s then I) to install"
 echo "     tmux plugins if they weren't installed automatically"

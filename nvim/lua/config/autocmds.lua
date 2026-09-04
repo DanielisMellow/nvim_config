@@ -22,6 +22,22 @@ vim.api.nvim_create_autocmd("BufEnter", {
 })
 
 ----------------------------------------------------------------------
+-- Run current Rust crate macro (@g)
+----------------------------------------------------------------------
+-- Same muscle memory as the Python macro above, but Rust builds a crate
+-- rather than a file, so this is `cargo run` from the project root.
+
+vim.api.nvim_create_augroup("run_crate", { clear = true })
+
+vim.api.nvim_create_autocmd("BufEnter", {
+    group = "run_crate",
+    pattern = "*.rs",
+    callback = function()
+        vim.fn.setreg("g", ":w\r:vsp | terminal cargo run\r")
+    end,
+})
+
+----------------------------------------------------------------------
 -- Autoformat toggles per filetype
 ----------------------------------------------------------------------
 
@@ -38,3 +54,5 @@ end
 set_autoformat({ "python" }, false)
 set_autoformat({ "toml" }, false)
 set_autoformat({ "lua" }, true)
+-- rustfmt is the community standard; there is no style debate to opt out of.
+set_autoformat({ "rust" }, true)
