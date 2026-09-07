@@ -1,7 +1,9 @@
 -- lua/config/options.lua
 
--- Python provider (used by Neovim + remote plugins)
-vim.g.python3_host_prog = vim.fn.expand("~/.pyenv/versions/nvim/bin/python3")
+-- Python provider (used by Neovim + remote plugins).
+-- Dedicated uv-managed venv with pynvim installed:
+--   uv venv ~/.venvs/nvim && VIRTUAL_ENV=~/.venvs/nvim uv pip install pynvim
+vim.g.python3_host_prog = vim.fn.expand("~/.venvs/nvim/bin/python3")
 
 -- Disable unused language providers to avoid warnings and startup work
 vim.g.loaded_node_provider = 0

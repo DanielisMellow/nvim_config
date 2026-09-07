@@ -13,11 +13,9 @@ vim.api.nvim_create_autocmd("BufEnter", {
     group = "run_file",
     pattern = "*.py",
     callback = function()
-        local py = vim.g.python3_host_prog or "python3"
-        -- CHANGE: Use \r instead of <CR>
-        -- We use [[ ]] string for cleaner syntax, but "..." works too
-        local cmd = (":w\r:vsp | terminal %s %% \r"):format(py)
-        vim.fn.setreg("g", cmd)
+        -- Run through uv so the script uses the project's env (pyproject/.venv)
+        -- rather than the Neovim provider interpreter. \r triggers the command.
+        vim.fn.setreg("g", ":w\r:vsp | terminal uv run python %% \r")
     end,
 })
 

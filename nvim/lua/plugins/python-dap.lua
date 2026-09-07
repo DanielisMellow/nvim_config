@@ -11,13 +11,13 @@ return {
                 elseif vim.fn.executable(cwd .. "/venv/bin/python") == 1 then
                     return cwd .. "/venv/bin/python"
                 else
-                    -- Fall back to pyenv's Python if available
-                    local pyenv_python = vim.fn.system("pyenv which python"):gsub("%s+", "")
-                    if vim.fn.executable(pyenv_python) == 1 then
-                        return pyenv_python
+                    -- Fall back to the interpreter uv resolves for this project
+                    local uv_python = vim.fn.system("uv python find"):gsub("%s+", "")
+                    if vim.v.shell_error == 0 and vim.fn.executable(uv_python) == 1 then
+                        return uv_python
                     end
                 end
-                -- If all else fails, use the system Python (or pyenv shim if configured)
+                -- If all else fails, use the system Python
                 return "python3"
             end
 
