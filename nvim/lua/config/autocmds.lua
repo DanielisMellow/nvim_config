@@ -15,7 +15,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
     callback = function()
         -- Run through uv so the script uses the project's env (pyproject/.venv)
         -- rather than the Neovim provider interpreter. \r triggers the command.
-        vim.fn.setreg("g", ":w\r:vsp | terminal uv run python %% \r")
+        vim.fn.setreg("g", ":w\r:vsp | terminal uv run python % \r")
     end,
 })
 
