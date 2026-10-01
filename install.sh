@@ -10,7 +10,10 @@ error()   { echo "[ERROR] $*" >&2; exit 1; }
 
 # ── Detect OS / package manager ───────────────────────────────────────────────
 OS="$(uname -s)"
-ARCH="$(uname -m)"   # x86_64, arm64 (macOS), aarch64 (64-bit Pi), armv7l (32-bit Pi)
+# Kernel architecture: x86_64, arm64 (macOS), aarch64, armv7l. On a Pi this can
+# be aarch64 even under 32-bit Raspberry Pi OS (64-bit kernel, armhf userland),
+# so anything dynamically linked must check the userland arch instead.
+ARCH="$(uname -m)"
 
 # version_ge A B → succeeds when A >= B (semver-ish, via `sort -V`)
 version_ge() { [ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | head -1)" = "$2" ]; }
@@ -124,12 +127,15 @@ if [ "$WANT_NVIM" = true ]; then
   nvim_version() { nvim --version 2>/dev/null | head -1 | sed 's/^NVIM v\([0-9.]*\).*/\1/'; }
 
   install_nvim_release() {
-    local nvim_arch
-    case "$ARCH" in
-      x86_64)        nvim_arch="x86_64" ;;
-      aarch64|arm64) nvim_arch="arm64" ;;
+    # The release build links against glibc, so pick it by the userland arch
+    # (amd64/arm64/armhf), not the kernel's: see ARCH above.
+    local deb_arch nvim_arch
+    deb_arch="$(dpkg --print-architecture)"
+    case "$deb_arch" in
+      amd64) nvim_arch="x86_64" ;;
+      arm64) nvim_arch="arm64" ;;
       *)
-        warn "No official Neovim build for $ARCH — falling back to apt (may be too old for LazyVim)"
+        warn "No official Neovim build for $deb_arch — falling back to apt (may be too old for LazyVim)"
         sudo apt-get install -y neovim
         return
         ;;
