@@ -18,13 +18,17 @@ Works on **macOS** and **Linux** (Debian/Ubuntu, Fedora/RHEL, Arch).
 ```bash
 git clone https://github.com/DanielisMellow/nvim_config.git ~/dotfiles
 cd ~/dotfiles
-./install.sh
+./install.sh            # everything
+./install.sh --tmux     # just tmux (e.g. on a server or Raspberry Pi)
+./install.sh --nvim     # just Neovim and its tooling
 ```
+
+With no flags it sets up both. `--nvim` installs Neovim, its CLI tools, uv and Rust, and links `~/.config/nvim`; `--tmux` installs tmux, links `~/.tmux.conf` and sets up TPM. The flags can be combined.
 
 The script will:
 
 1. **macOS** — install Homebrew if missing; **Linux** — use `apt` / `dnf` / `pacman`
-2. Install **Neovim**, **tmux**, and common CLI tools (`ripgrep`, `fd`, `fzf`, `node`, `lazygit`, `python3`)
+2. Install **Neovim**, **tmux**, and common CLI tools (`ripgrep`, `fd`, `fzf`, `node`, `npm`, `lazygit`, `python3`); on Linux also a C compiler, `curl` and `unzip`
 3. Install **[uv](https://docs.astral.sh/uv/)** — fast Python package & venv manager. Prefers the system package manager (`brew` on macOS, `dnf`/`pacman` on Linux); if the packaged version is missing or older than `MIN_UV_VERSION` in `install.sh`, it falls back to Astral's official installer (Astral publishes no apt/dnf repo).
 4. Symlink `nvim/` → `~/.config/nvim`
 5. Symlink `.tmux.conf` → `~/.tmux.conf`
@@ -32,7 +36,7 @@ The script will:
 
 > **Note:** when uv comes from Astral's installer it lands in `~/.local/bin`. If `uv` isn't found right after install, open a new shell (the installer adds it to your PATH) or run `source $HOME/.local/bin/env`. Update it anytime with `uv self update`.
 
-> **Note for Ubuntu servers:** the script adds the `neovim-ppa/unstable` PPA to get a recent version of Neovim instead of the outdated apt default.
+> **Note for Debian / Ubuntu / Raspberry Pi OS:** apt's Neovim is too old for LazyVim, so the script installs the official release build (x86_64 or arm64) into `/opt` and links it at `/usr/local/bin/nvim`. Debian's `fdfind` is linked as `~/.local/bin/fd`.
 
 ### After running the script
 
